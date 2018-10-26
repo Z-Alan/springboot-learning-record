@@ -2,7 +2,6 @@ package com.example.springdatajpa.service.article.impl;
 
 import com.example.springdatajpa.domain.Article;
 import com.example.springdatajpa.domain.dto.ArticleDTO;
-import com.example.springdatajpa.domain.dto.UserDTO;
 import com.example.springdatajpa.repository.ArticleRepository;
 import com.example.springdatajpa.repository.dto.ArticleDTORepository;
 import com.example.springdatajpa.service.article.ArticleService;
@@ -15,9 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import javax.persistence.criteria.*;
 
 /**
  * @author zhouqiang
@@ -32,24 +28,15 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleRepository articleRepository;
 
     @Override
-    public void innerJoinExample() {
+    public void innerJoinExample(ArticleDTO condition) {
         // 根据查询结果，声明返回值对象，这里要查询用户的文章列表，所以声明返回对象为ArticleDTO
-        // Root<X>;  根查询，默认与声明相同
-        Specification<ArticleDTO> spec = (Specification<ArticleDTO>) (root, criteriaQuery, criteriaBuilder) -> {
-            // 声明并创建ArticleDTO的CriteriaQuery对象
-            CriteriaQuery<ArticleDTO> query = criteriaBuilder.createQuery(ArticleDTO.class);
-            // 连接的时候，要以声明的根查询对象（这里是root，也可以自己创建）进行join
-            // Join<Z,X>;是Join生成的对象，这里的Z是被连接的对象，X是目标对象，
-            // 连接的属性字段是被连接的对象在目标对象的属性，这里是我们在ArticleDTO内声明的user
-            // join的第二个参数是可选的，默认是JoinType.INNER(内连接 inner join)，也可以是JoinType.LEFT（左外连接 left join）
-            Join<UserDTO, ArticleDTO> articleDTOJoin = root.join("user", JoinType.INNER);
-            // 用CriteriaQuery对象拼接查询条件，这里只增加了一个查询条件，userId=1
-            query.select(articleDTOJoin).where(criteriaBuilder.equal(root.get("userId"), 1));
-            Predicate p1;
-            // 通过getRestriction获得Predicate对象
-            p1 = query.getRestriction();
-            return p1;
-        };
+        Specification<ArticleDTO> spec = ArticleConditionSpec.getArticleDTOInnerJoinUserDTOSpec(condition);
+        articleDTOResultPrint(spec);
+    }
+
+    @Override
+    public void innerJoinDynamicConditionExample(ArticleDTO condition) {
+        Specification<ArticleDTO> spec = ArticleConditionSpec.getArticleDTOInnerJoinUserDTODynamicSpec(condition);
         articleDTOResultPrint(spec);
     }
 

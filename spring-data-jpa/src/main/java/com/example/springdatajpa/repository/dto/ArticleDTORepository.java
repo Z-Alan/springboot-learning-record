@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 /**
  * @author zhou
  */
-public interface ArticleDTORepository extends JpaRepository<ArticleDTO,Long>,JpaSpecificationExecutor<ArticleDTO> {
+public interface ArticleDTORepository extends JpaRepository<ArticleDTO, Long>, JpaSpecificationExecutor<ArticleDTO> {
 }

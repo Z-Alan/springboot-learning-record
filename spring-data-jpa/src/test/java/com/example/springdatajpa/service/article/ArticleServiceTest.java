@@ -2,6 +2,7 @@ package com.example.springdatajpa.service.article;
 
 import com.example.springdatajpa.BaseTest;
 import com.example.springdatajpa.domain.Article;
+import com.example.springdatajpa.domain.User;
 import com.example.springdatajpa.domain.dto.ArticleDTO;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,9 @@ public class ArticleServiceTest extends BaseTest {
 
     @Test
     public void innerJoinExampleTest() {
-        articleService.innerJoinExample();
+        ArticleDTO condition = new ArticleDTO();
+        condition.setUserId(1L);
+        articleService.innerJoinExample(condition);
     }
 
     @Test
@@ -30,8 +33,8 @@ public class ArticleServiceTest extends BaseTest {
     public void singleDynamicConditionLikeExampleTest() {
         ArticleDTO condition = new ArticleDTO();
         condition.setId(11L);
-//        condition.setTitle("第");
-        condition.setTitle("5");
+        condition.setTitle("第");
+//        condition.setTitle("5");
         articleService.singleDynamicConditionLikeExample(condition);
     }
 
@@ -43,5 +46,13 @@ public class ArticleServiceTest extends BaseTest {
         articleService.singleDynamicConditionExample(condition);
     }
 
-
+    @Test
+    public void innerJoinDynamicConditionExampleTest() {
+        ArticleDTO condition = new ArticleDTO();
+        condition.setId(1L);
+        User user = new User();
+        user.setName("AA");
+//        condition.setUser(user);
+        articleService.innerJoinDynamicConditionExample(condition);
+    }
 }
