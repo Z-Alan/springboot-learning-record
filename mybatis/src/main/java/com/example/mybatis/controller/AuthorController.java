@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +21,18 @@ import java.util.Map;
 public class AuthorController {
     
 
+    private final AuthorService authorService;
+
     @Autowired
-    private AuthorService authorService;
+    public AuthorController(AuthorService authorService) {
+        this.authorService = authorService;
+    }
 
     /**
      * 查询用户列表
      */
-    @RequestMapping(method = RequestMethod.GET)
-    public Map<String, Object> getAuthorList(HttpServletRequest request) {
+    @GetMapping
+    public Map<String, Object> getAuthorList() {
         List<Author> authorList = this.authorService.findAuthorList();
         Map<String,Object> param = new HashMap<>(2);
         param.put("total", authorList.size());
@@ -40,8 +43,8 @@ public class AuthorController {
     /**
      * 查询用户信息
      * */
-    @RequestMapping(value = "/{userId:\\d+}",method = RequestMethod.GET)
-    public Author getAuthor(@PathVariable Long userId,HttpServletRequest request){
+    @GetMapping(value = "/{userId:\\d+}")
+    public Author getAuthor(@PathVariable Long userId){
 
         Author author = this.authorService.findAuthor(userId);
         if (author == null) {
@@ -53,7 +56,7 @@ public class AuthorController {
     /**
      * 新增方法
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public int add(@RequestBody Author author){
         int effectRow = 0;
 
@@ -70,7 +73,7 @@ public class AuthorController {
     /**
      * 更新方法
      */
-    @RequestMapping(value = "/{userId:\\d+}",method = RequestMethod.PUT)
+    @PutMapping(value = "/{userId:\\d+}")
     public int update (@PathVariable Long userId,@RequestBody Author author){
         int effectRow = 0;
         if (author != null) {
@@ -87,7 +90,7 @@ public class AuthorController {
     /**
      * 删除方法
      */
-    @RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{userId:\\d+}")
     public void delete(@PathVariable Long userId) {
         try{
             this.authorService.delete(userId);
