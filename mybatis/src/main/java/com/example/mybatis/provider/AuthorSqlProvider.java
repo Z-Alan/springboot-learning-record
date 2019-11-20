@@ -1,18 +1,17 @@
 package com.example.mybatis.provider;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Author 实体的 SQL 工具类，可以动态编写SQL
  *
  * @author zhouqiang
  */
+@Slf4j
 public class AuthorSqlProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthorSqlProvider.class);
 
     /*
      * 主要用途：根据复杂的业务需求来动态生成SQL.
@@ -35,9 +34,9 @@ public class AuthorSqlProvider {
      * @date 2018/7/12 17:00
      */
     public String listByRealName(String realName) {
-        LOGGER.info("[- 参数 -] 根据realName查找Author --- [- {} -]", realName);
+        log.info("[- 参数 -] 根据realName查找Author --- [- {} -]", realName);
         String sql = "select * from t_author where real_name = #{realName}";
-        LOGGER.info("[- SQL -] 根据realName查找Author --- [- {} -]", sql);
+        log.info("[- SQL -] 根据realName查找Author --- [- {} -]", sql);
         return sql;
     }
 
@@ -61,7 +60,7 @@ public class AuthorSqlProvider {
      * @date   2018/7/12 17:16
      * */
     public String selectAuthor(@Param("realName")String realName,@Param("nickName")String nickName){
-        LOGGER.info("[- 参数 -] 模糊查找Author --- [- {} -],[- {} -]",realName, nickName);
+        log.info("[- 参数 -] 模糊查找Author --- [- {} -],[- {} -]",realName, nickName);
         SQL sql = new SQL();
         sql.SELECT("*");
         sql.FROM("t_author");
@@ -70,7 +69,7 @@ public class AuthorSqlProvider {
         } else {
             sql.WHERE("1 = 2");
         }
-        LOGGER.info("[- SQL -] 模糊查找Author --- [- {} -]",sql);
+        log.info("[- SQL -] 模糊查找Author --- [- {} -]",sql);
         return sql.toString();
     }
 
