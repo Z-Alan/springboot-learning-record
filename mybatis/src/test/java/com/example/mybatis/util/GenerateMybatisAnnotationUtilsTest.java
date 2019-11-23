@@ -1,11 +1,10 @@
 package com.example.mybatis.util;
 
 import com.example.mybatis.model.Author;
-import com.example.mybatis.model.temp.PolicyDO;
+import com.example.mybatis.model.temp.PolicyStrategyDO;
 import org.junit.Test;
-import static org.hamcrest.CoreMatchers.is;
+
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 public class GenerateMybatisAnnotationUtilsTest {
 
@@ -17,7 +16,7 @@ public class GenerateMybatisAnnotationUtilsTest {
 
     @Test
     public void getResultsStrWithFirstWordsUpTest() {
-        String s = GenerateMybatisAnnotationUtils.getResultsStrWithFirstWordsUp(PolicyDO.class);
+        String s = GenerateMybatisAnnotationUtils.getResultsStrWithFirstWordsUp(PolicyStrategyDO.class);
         assertNotNull(s);
     }
 }

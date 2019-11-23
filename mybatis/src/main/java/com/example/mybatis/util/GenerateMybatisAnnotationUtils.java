@@ -12,10 +12,7 @@ import java.lang.reflect.Field;
  * @date 2018/7/3 13:43
  */
 @Slf4j
-class GenerateMybatisAnnotationUtils {
-    private GenerateMybatisAnnotationUtils() {
-    }
-
+public class GenerateMybatisAnnotationUtils {
     /**
      * 用于获取结果集的映射关系.
      *
@@ -23,7 +20,7 @@ class GenerateMybatisAnnotationUtils {
      * @return 结果集的映射关系
      * @author zhouqiang
      */
-    static String getResultsStr(Class origin) {
+    public static String getResultsStr(Class origin) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("@Results({\n");
         for (Field field : ClassUtils.getAllFields(origin)) {
@@ -44,7 +41,7 @@ class GenerateMybatisAnnotationUtils {
      * @return 结果集的映射关系
      * @author zhouqiang
      */
-    static String getResultsStrWithFirstWordsUp(Class origin) {
+    public static String getResultsStrWithFirstWordsUp(Class origin) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("@Results({\n");
         for (Field field : ClassUtils.getAllFields(origin)) {
@@ -54,7 +51,7 @@ class GenerateMybatisAnnotationUtils {
             stringBuilder.append(String.format("@Result(property = \"%s\", column = \"%s\"),%n", property, column));
         }
         stringBuilder.append("})");
-        log.info("[- 结果集映射 -] 目标实体类的结果集映射 --- [- {} -]", stringBuilder.toString());
+        log.info("[- 结果集映射 -] 目标实体类的结果集映射 --- [-\n{}\n-]", stringBuilder.toString());
         return stringBuilder.toString();
     }
 

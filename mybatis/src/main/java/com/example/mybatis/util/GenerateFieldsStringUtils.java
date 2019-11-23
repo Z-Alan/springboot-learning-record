@@ -8,12 +8,9 @@ import java.lang.reflect.Field;
  * @author zhouqiang
  */
 @Slf4j
-class GenerateFieldsStringUtils {
+public class GenerateFieldsStringUtils {
 
-    private GenerateFieldsStringUtils() {
-    }
-
-    static String generateNameString(Class origin) {
+    public static String generateNameString(Class origin) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[ ");
         for (Field field : ClassUtils.getAllFields(origin)) {

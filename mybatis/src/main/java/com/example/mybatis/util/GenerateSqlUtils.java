@@ -1,6 +1,5 @@
 package com.example.mybatis.util;
 
-import com.example.mybatis.model.temp.PolicyStrategyDO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -11,11 +10,8 @@ import java.lang.reflect.Field;
  * @author zhouqiang
  */
 @Slf4j
-class GenerateSqlUtils {
-    private GenerateSqlUtils() {
-    }
-
-    static String generateInsertSql(Class origin, String tableName) {
+public class GenerateSqlUtils {
+    public static String generateInsertSql(Class origin, String tableName) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("insert into ");
@@ -36,7 +32,15 @@ class GenerateSqlUtils {
         return stringBuilder.toString();
     }
 
-    public static void main(String[] args) {
-        generateInsertSql(PolicyStrategyDO.class,"policy_strategy");
+    public static String generateUpdateSetSql(Class origin){
+        Field[] fields = ClassUtils.getAllFields(origin);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Field field : fields) {
+            String property = field.getName();
+            String column =  StringUtils.getMethodName(property);
+            stringBuilder.append(String.format("sql.SET(%s = #{%s})", column, property));
+        }
+        log.info("[- SQL -] update set语句 --- [- {} -]", stringBuilder.toString());
+        return stringBuilder.toString();
     }
 }
