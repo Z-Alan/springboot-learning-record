@@ -1,21 +1,14 @@
 package com.example.mybatis.model.temp;
 
-import com.xjjk.ec.Core.vo.BaseDO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
- * className:  PolicyStrategyDO
- * description: 商品策略实体
- * date:  2019/11/19
+ * 保存商品策略 参数
  *
  * @author zhouqiang
- * @version 1.0
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class PolicyStrategyDO extends BaseDO {
-
+public class SavePolicyStrategyReqVo {
     private Long id;
     /**
      * 策略名称
@@ -113,4 +106,6 @@ public class PolicyStrategyDO extends BaseDO {
      * 激活奖
      */
     private Double activationAward;
+
+    private String createSource;
 }
