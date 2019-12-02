@@ -55,4 +55,18 @@ public class GenerateMybatisAnnotationUtils {
         return stringBuilder.toString();
     }
 
+    public static String getColumnAnnotation(Class origin) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Field field : ClassUtils.getAllFields(origin)) {
+            String property = field.getName();
+            // 映射关系：对象属性(驼峰)->数据库字段(首字母大写)
+            String column = StringUtils.getMethodName(property);
+            stringBuilder.append(String.format("@Column(name = \"%s\")%n", column));
+        }
+        stringBuilder.append("})");
+        log.info("[- 注解映射 -] 目标实体类的注解映射 --- [-\n{}\n-]", stringBuilder.toString());
+        return stringBuilder.toString();
+    }
+
+
 }

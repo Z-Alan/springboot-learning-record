@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mybatis.dao.AuthorDAO">
+
+    <select id="listByRealName">
+        select Id,CouponId,IsLoopGift,MonthGrantDate,GrantStartDate,GrantTarget
+        from policy_coupon_grant
+        <where>
+            <if test="couponId != null">
+                CouponId = #{couponId}
+            </if>
+            <if test="isLoopGift != null">
+                IsLoopGift = #{isLoopGift}
+            </if>
+            <if test="monthGrantDate != null">
+                MonthGrantDate = #{monthGrantDate}
+            </if>
+            <if test="grantStartDate != null">
+                GrantStartDate = #{grantStartDate}
+            </if>
+            <if test="grantTarget != null">
+                GrantTarget = #{grantTarget}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

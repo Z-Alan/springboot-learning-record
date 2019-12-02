@@ -19,7 +19,7 @@ public class GenerateSqlUtils {
         stringBuilder.append("(");
         for (Field field : fields) {
             String property = field.getName();
-            String column =  StringUtils.getMethodName(property);
+            String column = StringUtils.getMethodName(property);
             stringBuilder.append(String.format("%s,", column));
         }
         stringBuilder.append(") values(");
@@ -28,19 +28,49 @@ public class GenerateSqlUtils {
             stringBuilder.append(String.format("#{%s},", property));
         }
         stringBuilder.append(")");
-        log.info("[- SQL -] 目标表insert语句 --- [- {} -]", stringBuilder.toString());
+        log.info("[- SQL -] 目标表insert语句 --- [-\n{}\n-]", stringBuilder.toString());
         return stringBuilder.toString();
     }
 
-    public static String generateUpdateSetSql(Class origin){
+    public static String generateSelectSql(Class origin, String tableName) {
+        Field[] fields = ClassUtils.getAllFields(origin);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(String.format("select %s %n from %s %n", ClassUtils.getAllFieldsUpperCaseNameString(origin),tableName));
+        stringBuilder.append("<where>");
+        for (Field field : fields) {
+            String property = field.getName();
+            String column = StringUtils.getMethodName(property);
+            stringBuilder.append(String.format("<if test=\"%s != null\">%n %s = #{%s} %n</if>%n",property,column,property));
+        }
+        stringBuilder.append("</where>");
+        log.info("[- SQL -] 目标表select语句 --- [-\n{}\n-]", stringBuilder.toString());
+        return stringBuilder.toString();
+    }
+
+    public static String generateSelectWhereSql(Class origin) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         for (Field field : fields) {
             String property = field.getName();
-            String column =  StringUtils.getMethodName(property);
-            stringBuilder.append(String.format("sql.SET(%s = #{%s})", column, property));
+            String column = StringUtils.getMethodName(property);
+            stringBuilder.append(String.format("if (%s.get%s() != null) {%n" +
+                    "            sql.AND();%n" +
+                    "            sql.WHERE(\"%s=#{%s}\");%n" +
+                    "        }", origin.getName(), column, column, property));
         }
-        log.info("[- SQL -] update set语句 --- [- {} -]", stringBuilder.toString());
+        log.info("[- SQL -] select where语句 --- [- \n{}\n -]", stringBuilder.toString());
+        return stringBuilder.toString();
+    }
+
+    public static String generateUpdateSetSql(Class origin) {
+        Field[] fields = ClassUtils.getAllFields(origin);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Field field : fields) {
+            String property = field.getName();
+            String column = StringUtils.getMethodName(property);
+            stringBuilder.append(String.format("sql.SET(\"%s = #{%s}\");%n", column, property));
+        }
+        log.info("[- SQL -] update set语句 --- [-\n{}\n-]", stringBuilder.toString());
         return stringBuilder.toString();
     }
 }

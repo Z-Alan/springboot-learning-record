@@ -1,14 +1,21 @@
-package com.example.mybatis.model.temp;
+package com.example.mybatis.model.temp.strategy;
 
+import com.xjjk.ec.Core.vo.BaseDO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * 修改商品策略详情 DTO
+ * className:  PolicyStrategyDO
+ * description: 商品策略实体
+ * date:  2019/11/19
  *
  * @author zhouqiang
+ * @version 1.0
  */
 @Data
-public class UpdatePolicyStrategyDTO {
+@EqualsAndHashCode(callSuper = true)
+public class PolicyStrategyDO extends BaseDO {
+
     private Long id;
     /**
      * 策略名称
@@ -106,6 +113,4 @@ public class UpdatePolicyStrategyDTO {
      * 激活奖
      */
     private Double activationAward;
-
-    private String updateSource;
 }

@@ -1,14 +1,14 @@
-package com.example.mybatis.model.temp;
+package com.example.mybatis.model.temp.strategy;
 
 import lombok.Data;
 
 /**
- * 保存商品策略 参数
+ * 修改商品策略详情 DTO
  *
  * @author zhouqiang
  */
 @Data
-public class SavePolicyStrategyReqVo {
+public class UpdatePolicyStrategyDTO {
     private Long id;
     /**
      * 策略名称
@@ -107,5 +107,5 @@ public class SavePolicyStrategyReqVo {
      */
     private Double activationAward;
 
-    private String createSource;
+    private String updateSource;
 }

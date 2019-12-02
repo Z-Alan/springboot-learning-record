@@ -1,7 +1,8 @@
 package com.example.mybatis.util;
 
 import com.example.mybatis.model.Author;
-import com.example.mybatis.model.temp.PolicyStrategyDO;
+import com.example.mybatis.model.temp.coupon.PolicyCouponDO;
+import com.example.mybatis.model.temp.PolicyDO;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -16,7 +17,13 @@ public class GenerateMybatisAnnotationUtilsTest {
 
     @Test
     public void getResultsStrWithFirstWordsUpTest() {
-        String s = GenerateMybatisAnnotationUtils.getResultsStrWithFirstWordsUp(PolicyStrategyDO.class);
+        String s = GenerateMybatisAnnotationUtils.getResultsStrWithFirstWordsUp(PolicyCouponDO.class);
+        assertNotNull(s);
+    }
+
+    @Test
+    public void getColumnAnnotationTest() {
+        String s = GenerateMybatisAnnotationUtils.getColumnAnnotation(PolicyDO.class);
         assertNotNull(s);
     }
 }
