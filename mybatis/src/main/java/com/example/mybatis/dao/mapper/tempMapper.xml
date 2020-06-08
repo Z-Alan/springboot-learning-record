@@ -4,26 +4,67 @@
 <mapper namespace="com.example.mybatis.dao.AuthorDAO">
 
     <select id="listByRealName">
-        select Id,CouponId,IsLoopGift,MonthGrantDate,GrantStartDate,GrantTarget
-        from policy_coupon_grant
-        <where>
-            <if test="couponId != null">
-                CouponId = #{couponId}
-            </if>
-            <if test="isLoopGift != null">
-                IsLoopGift = #{isLoopGift}
-            </if>
-            <if test="monthGrantDate != null">
-                MonthGrantDate = #{monthGrantDate}
-            </if>
-            <if test="grantStartDate != null">
-                GrantStartDate = #{grantStartDate}
-            </if>
-            <if test="grantTarget != null">
-                GrantTarget = #{grantTarget}
-            </if>
-        </where>
-
+        select
+        -- 订单信息
+        o.Id,o.`Code`,o.OrderType,o.CustomerId,o.CustomerName,o.`Status`,o.UserId,o.UserName,OrderTime,
+        -- 合规审单人
+        oreview.ReviewerId,oreview.ReviewerName,
+        -- 财务审单人
+        ofr.ReviewerId
+        from orders o
+        left join order_review oreview on o.Id = oreview.OrderId
+        left join order_financial_review ofr on o.Id = ofr.OrderId
+        where o.IsDeleted = 0
+        and o.Status = #{status}
+        <if test="code != null">
+            and o.Code = #{code}
+        </if>
+        <if test="customerId != null">
+            and o.CustomerId = #{customerId}
+        </if>
+        <if test="userId != null">
+            and o.UserId = #{userId}
+        </if>
+        -- 订单金额范围
+        <if test="payAmountMin != null">
+            and o.PayAmount &gt;= #{payAmountMin}
+        </if>
+        <if test="payAmountMax != null">
+            and o.PayAmount &lt;= #{payAmountMax}
+        </if>
+        -- 制单时间范围
+        <if test="orderTimeStart != null">
+            and o.OrderTime &gt;= #{orderTimeStart}
+        </if>
+        <if test="orderTimeEnd != null">
+            and o.OrderTime &lt;= #{orderTimeEnd}
+        </if>
     </select>
+
+    <insert id="listByRealName">
+        insert into logistics_sf
+        (MailId, MailNo, OrderId, AcceptTime, AcceptAddress, Remark, OpCode,IsDeleted,CreateSource)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.mailId},
+            #{item.mailNo}, #{item.orderId},
+            #{item.acceptTime},
+            #{item.acceptAddress},
+            #{item.remark},
+            #{item.opCode}, 0,
+            #{item.createSource}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        MailId = #{mailId}
+    </insert>
+    <update id="findAuthorList">
+        #         select t.m_type, s.level, s.min_value, s.max_value
+#         from db_m_type t
+#                  left join db_m_standard s on t.m_type = s.m_type
+#         where t.cate_id = 3
+#           and s.used_flag = 1
+    </update>
 
 </mapper>

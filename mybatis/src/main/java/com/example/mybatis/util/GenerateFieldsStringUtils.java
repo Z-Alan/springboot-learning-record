@@ -3,6 +3,7 @@ package com.example.mybatis.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author zhouqiang
@@ -22,4 +23,11 @@ public class GenerateFieldsStringUtils {
         return stringBuilder.toString();
     }
 
+    public static void main(String[] args) {
+        String str = "string";
+        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+        for (byte aByte : bytes) {
+            System.out.println(aByte);
+        }
+    }
 }

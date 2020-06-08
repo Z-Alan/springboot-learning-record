@@ -1,8 +1,10 @@
 package com.example.mybatis.util;
 
+import com.example.mybatis.model.temp.LogisticsSfDO;
 import com.example.mybatis.model.temp.coupon.PolicyCouponDO;
 import com.example.mybatis.model.temp.coupon.SelectPolicyCouponDTO;
 import com.example.mybatis.model.temp.coupon.cash.SelectCashCouponDTO;
+import com.example.mybatis.model.temp.coupon.flow.SelectPolicyCouponFlowDTO;
 import com.example.mybatis.model.temp.coupon.goods.SelectGoodsCouponDTO;
 import com.example.mybatis.model.temp.coupon.grant.SelectCouponGrantDTO;
 import com.example.mybatis.model.temp.strategy.PolicyStrategyDO;
@@ -14,7 +16,7 @@ public class GenerateSqlUtilsTest {
 
     @Test
     public void generateInsertSqlTest() {
-        GenerateSqlUtils.generateInsertSql(PolicyCouponDO.class,"policy_coupon");
+        GenerateSqlUtils.generateInsertSql(LogisticsSfDO.class,"logistics_sf");
     }
 
     @Test
@@ -29,6 +31,6 @@ public class GenerateSqlUtilsTest {
 
     @Test
     public void generateSelectSqlTest() {
-        GenerateSqlUtils.generateSelectSql(SelectCouponGrantDTO.class,"policy_coupon_grant");
+        GenerateSqlUtils.generateSelectSql(SelectPolicyCouponFlowDTO.class,"policy_coupon_flow");
     }
 }
