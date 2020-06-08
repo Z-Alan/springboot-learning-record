@@ -22,14 +22,14 @@ public class GenerateMybatisAnnotationUtils {
      */
     public static String getResultsStr(Class origin) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("@Results({\n");
+        stringBuilder.append("\n@Results({\n");
         for (Field field : ClassUtils.getAllFields(origin)) {
             String property = field.getName();
             // 映射关系：对象属性(驼峰)->数据库字段(下划线)
             String column = new PropertyNamingStrategy.SnakeCaseStrategy().translate(field.getName());
             stringBuilder.append(String.format("@Result(property = \"%s\", column = \"%s\"),%n", property, column));
         }
-        stringBuilder.append("})");
+        stringBuilder.append("})\n");
         log.info("[- 结果集映射 -] 目标实体类的结果集映射 --- [- {} -]", stringBuilder.toString());
         return stringBuilder.toString();
     }
@@ -43,14 +43,14 @@ public class GenerateMybatisAnnotationUtils {
      */
     public static String getResultsStrWithFirstWordsUp(Class origin) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("@Results({\n");
+        stringBuilder.append("\n@Results({\n");
         for (Field field : ClassUtils.getAllFields(origin)) {
             String property = field.getName();
             // 映射关系：对象属性(驼峰)->数据库字段(首字母大写)
             String column = StringUtils.getMethodName(field.getName());
             stringBuilder.append(String.format("@Result(property = \"%s\", column = \"%s\"),%n", property, column));
         }
-        stringBuilder.append("})");
+        stringBuilder.append("})\n");
         log.info("[- 结果集映射 -] 目标实体类的结果集映射 --- [-\n{}\n-]", stringBuilder.toString());
         return stringBuilder.toString();
     }
