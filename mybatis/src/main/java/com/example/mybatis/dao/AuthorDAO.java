@@ -9,7 +9,7 @@ import java.util.List;
 
 
 // @Mapper注解：
-// @Component注解：是为了解决在注入该bena时不报红，不写也不影响系统运行
+// @Component注解：是为了解决在注入该bean时IDEA中不报红，不写也不影响系统运行
 
 /**
  * AuthorDAO.

@@ -19,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/author")
 @Slf4j
 public class AuthorController {
-    
+
 
     private final AuthorService authorService;
 
@@ -34,7 +34,7 @@ public class AuthorController {
     @GetMapping
     public Map<String, Object> getAuthorList() {
         List<Author> authorList = this.authorService.findAuthorList();
-        Map<String,Object> param = new HashMap<>(2);
+        Map<String, Object> param = new HashMap<>(2);
         param.put("total", authorList.size());
         param.put("rows", authorList);
         return param;
@@ -42,13 +42,13 @@ public class AuthorController {
 
     /**
      * 查询用户信息
-     * */
+     */
     @GetMapping(value = "/{userId:\\d+}")
-    public Author getAuthor(@PathVariable Long userId){
+    public Author getAuthor(@PathVariable Long userId) {
 
         Author author = this.authorService.findAuthor(userId);
         if (author == null) {
-            log.info("[- 错误 -] 获取author资源 --- [- {} -]","查询为空");
+            log.info("[- 错误 -] 获取author资源 --- [- {} -]", "查询为空");
         }
         return author;
     }
@@ -57,14 +57,14 @@ public class AuthorController {
      * 新增方法
      */
     @PostMapping
-    public int add(@RequestBody Author author){
+    public int add(@RequestBody Author author) {
         int effectRow = 0;
 
         if (author != null) {
             try {
                 effectRow = this.authorService.add(author);
             } catch (Exception e) {
-                log.error("[- 异常 -] 添加作者 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]",e,e.getStackTrace());
+                log.error("[- 异常 -] 添加作者 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]", e, e.getStackTrace());
             }
         }
         return effectRow;
@@ -74,14 +74,14 @@ public class AuthorController {
      * 更新方法
      */
     @PutMapping(value = "/{userId:\\d+}")
-    public int update (@PathVariable Long userId,@RequestBody Author author){
+    public int update(@PathVariable Long userId, @RequestBody Author author) {
         int effectRow = 0;
         if (author != null) {
             author.setId(userId);
             try {
                 effectRow = this.authorService.update(author);
             } catch (Exception e) {
-               log.error("[- 异常 -] 更新 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]",e,e.getStackTrace());
+                log.error("[- 异常 -] 更新 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]", e, e.getStackTrace());
             }
         }
         return effectRow;
@@ -92,10 +92,10 @@ public class AuthorController {
      */
     @DeleteMapping(value = "/{userId:\\d+}")
     public void delete(@PathVariable Long userId) {
-        try{
+        try {
             this.authorService.delete(userId);
-        }catch(Exception e){
-            log.error("[- 异常 -] 删除 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]",e,e.getStackTrace());
+        } catch (Exception e) {
+            log.error("[- 异常 -] 删除 --- 异常类型 : [- {} -] --- 堆栈信息 : [- {} -]", e, e.getStackTrace());
         }
     }
 
