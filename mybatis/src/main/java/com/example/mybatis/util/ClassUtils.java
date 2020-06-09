@@ -22,7 +22,7 @@ public class ClassUtils {
      * @param origin 类
      * @return 类声明的属性集合
      */
-    public static Field[] getAllFields(Class origin) {
+    public static Field[] getAllFields(Class<?> origin) {
         List<Field> fieldList = new ArrayList<>();
         while (origin != null) {
             fieldList.addAll(new ArrayList<>(Arrays.asList(origin.getDeclaredFields())));
@@ -39,7 +39,7 @@ public class ClassUtils {
      * @author  zhouqiang
      * @date    2019/11/23
      */
-    public static String getAllFieldsUpperCaseNameString(Class origin){
+    public static String getAllFieldsUpperCaseNameString(Class<?> origin){
         String flag = "";
         StringBuilder stringBuilder = new StringBuilder();
         Field[] fields = getAllFields(origin);

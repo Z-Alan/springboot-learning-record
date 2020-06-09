@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
  */
 @Slf4j
 public class GenerateSqlUtils {
-    public static String generateInsertSql(Class origin, String tableName) {
+    public static void generateInsertSql(Class<?> origin, String tableName) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("insert into ");
@@ -29,10 +29,9 @@ public class GenerateSqlUtils {
         }
         stringBuilder.append(")");
         log.info("[- SQL -] 目标表insert语句 --- [-\n{}\n-]", stringBuilder.toString());
-        return stringBuilder.toString();
     }
 
-    public static String generateSelectSql(Class origin, String tableName) {
+    public static void generateSelectSql(Class<?> origin, String tableName) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(String.format("select %s %n from %s %n", ClassUtils.getAllFieldsUpperCaseNameString(origin),tableName));
@@ -44,10 +43,9 @@ public class GenerateSqlUtils {
         }
         stringBuilder.append("</where>");
         log.info("[- SQL -] 目标表select语句 --- [-\n{}\n-]", stringBuilder.toString());
-        return stringBuilder.toString();
     }
 
-    public static String generateSelectWhereSql(Class origin) {
+    public static void generateSelectWhereSql(Class<?> origin) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         for (Field field : fields) {
@@ -59,10 +57,9 @@ public class GenerateSqlUtils {
                     "        }", origin.getName(), column, column, property));
         }
         log.info("[- SQL -] select where语句 --- [- \n{}\n -]", stringBuilder.toString());
-        return stringBuilder.toString();
     }
 
-    public static String generateUpdateSetSql(Class origin) {
+    public static void generateUpdateSetSql(Class<?> origin) {
         Field[] fields = ClassUtils.getAllFields(origin);
         StringBuilder stringBuilder = new StringBuilder();
         for (Field field : fields) {
@@ -71,6 +68,5 @@ public class GenerateSqlUtils {
             stringBuilder.append(String.format("sql.SET(\"%s = #{%s}\");%n", column, property));
         }
         log.info("[- SQL -] update set语句 --- [-\n{}\n-]", stringBuilder.toString());
-        return stringBuilder.toString();
     }
 }

@@ -1,9 +1,7 @@
 package com.example.mybatis.util;
 
-import com.example.mybatis.model.temp.PolicyDO;
+import com.example.mybatis.model.Author;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ClassUtilsTest {
 
@@ -13,6 +11,6 @@ public class ClassUtilsTest {
 
     @Test
     public void getAllFieldsUpperCaseNameStringTest() {
-        ClassUtils.getAllFieldsUpperCaseNameString(PolicyDO.class);
+        ClassUtils.getAllFieldsUpperCaseNameString(Author.class);
     }
 }

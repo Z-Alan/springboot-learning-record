@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class GenerateFieldsStringUtils {
 
-    public static String generateNameString(Class origin) {
+    public static void generateNameString(Class<?> origin) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[ ");
         for (Field field : ClassUtils.getAllFields(origin)) {
@@ -20,7 +20,6 @@ public class GenerateFieldsStringUtils {
         }
         stringBuilder.append(" ]");
         log.info("[- name String -] name string 生成 --- [- {} -]", stringBuilder.toString());
-        return stringBuilder.toString();
     }
 
     public static void main(String[] args) {
