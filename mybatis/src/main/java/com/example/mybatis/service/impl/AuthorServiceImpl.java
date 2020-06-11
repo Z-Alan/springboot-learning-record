@@ -1,7 +1,7 @@
 package com.example.mybatis.service.impl;
 
 import com.example.mybatis.dao.AuthorDAO;
-import com.example.mybatis.model.Author;
+import com.example.mybatis.model.po.Author;
 import com.example.mybatis.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

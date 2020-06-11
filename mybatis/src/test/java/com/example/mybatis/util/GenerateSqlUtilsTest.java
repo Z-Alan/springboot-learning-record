@@ -1,6 +1,6 @@
 package com.example.mybatis.util;
 
-import com.example.mybatis.model.Author;
+import com.example.mybatis.model.po.Author;
 import com.example.mybatis.model.temp.LogisticsSfDO;
 import org.junit.Test;
 

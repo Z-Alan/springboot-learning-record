@@ -1,7 +1,7 @@
 package com.example.mybatis.service;
 
 
-import com.example.mybatis.model.Author;
+import com.example.mybatis.model.po.Author;
 
 import java.util.List;
 

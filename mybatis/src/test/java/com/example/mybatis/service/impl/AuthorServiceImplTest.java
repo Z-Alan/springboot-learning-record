@@ -1,6 +1,6 @@
 package com.example.mybatis.service.impl;
 
-import com.example.mybatis.model.Author;
+import com.example.mybatis.model.po.Author;
 import com.example.mybatis.service.AuthorService;
 import com.example.mybatis.service.BaseServiceTest;
 import org.junit.Test;
@@ -30,8 +30,7 @@ public class AuthorServiceImplTest extends BaseServiceTest {
         author.setId(1L);
         author.setNickName("假名字");
         author.setRealName("真名字");
-        int row = 0 ;
-        row = authorService.update(author);
+        int row;
         author.setId(2L);
         author.setNickName("更远的以后");
         author.setRealName("周牧");
