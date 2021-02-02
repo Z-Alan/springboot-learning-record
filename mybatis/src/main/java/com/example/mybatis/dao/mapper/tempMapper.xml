@@ -65,6 +65,739 @@
 #                  left join db_m_standard s on t.m_type = s.m_type
 #         where t.cate_id = 3
 #           and s.used_flag = 1
+        select DISTINCT oi.SkuCode
+        from orders o
+                 left join order_item oi on o.Id = oi.OrderId and oi.IsDeleted = 0
+        where o.IsDeleted = 0
+          and o.`Status` in (10, 20, 30, 40, 50, 70, 80, 90, 100, 110, 120, 130, 140)
+          and o.OrderTime &gt; '2020-06-18 00:00:00'
+          and o.OrderTime &lt; '2020-06-18 23:59:59'
     </update>
+
+    <select id="listByRealName">
+        select DISTINCT HwQueue from cc_wiring_team
+        where SkillGroupId in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+        and HwQueue is not null and HwQueue != '' and HwQueue != 0
+    </select>
+
+    <select id="listByRealName">
+        select Id,Name,Status,Type,StartTime,EndTime
+        from newec.policy
+        where IsDeleted = 0
+        <if test="name != null and name != ''">
+            and `Name` REGEXP #{name}
+        </if>
+        <if test="status != null">
+            and Status = #{status}
+        </if>
+        <if test="type != null">
+            and Type = #{type}
+        </if>
+        <if test="startTime != null">
+            and StartTime = #{startTime}
+        </if>
+        <if test="endTime != null">
+            and EndTime = #{endTime}
+        </if>
+    </select>
+
+    <update id="listByRealName">
+        update policy
+        set Status       = #{afterUpdateStatus},
+            UpdateSource = #{updateSource}
+        where IsDeleted = 0
+          and Id = #{policyId}
+          and Status = #{beforeUpdateStatus}
+          and StartTime &lt;= now()
+          and EndTime &gt;= now()
+    </update>
+
+
+    <select id="listByRealName">
+        select Id, Name, Status, Type, StartTime, EndTime
+        from newec.policy
+        where IsDeleted = 0
+          and StartTime &lt;= now()
+          and EndTime &gt;= now()
+          and `Status` = 0
+    </select>
+
+    <select id="listByRealName">
+        select Id, Name, Status, Type, StartTime, EndTime
+        from newec.policy
+        where IsDeleted = 0
+          and EndTime &lt;= now()
+          and `Status` = 1
+    </select>
+
+    <select id="listByRealName">
+        UPDATE policy_goods_group
+        set IsDeleted    = #{isDeleted},
+            UpdateSource = #{updateSource}
+        where PolicyId = #{policyId};
+    </select>
+
+    <select id="listByRealName">
+        select DISTINCT PolicyFullId
+        from policy_full_dept
+        where
+        IsDeleted = 0
+        and DepartmentId in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
+    <select id="listByRealName">
+        select Id,GoodsId,GoodsType,Number,Grade,`Status`,StartTime,EndTime,IsDeleted
+        from policy_full_gift
+        where IsDeleted = 1
+        and `Status` = 1
+        and StartTime &lt;= #{nowDate}
+        and EndTime >= #{nowDate}
+        and Id in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+        <if test="workAges != null">
+            and(
+            (StartMonth &lt;= @workAges and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth is null)
+            or (StartMonth &lt;= #{workAges} and EndMonth is null)
+            )
+        </if>
+        <if test="grade != null">
+            and Grade &lt;= #{grade}
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        select Id,GoodsId,GoodsType,Number,ConsumeIntegral,`Status`,StartTime,EndTime,IsDeleted
+        from policy_integral_exchange
+        where IsDeleted = 1
+        and `Status` = 1
+        and StartTime &lt;= #{nowDate}
+        and EndTime >= #{nowDate}
+        and Id in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+        <if test="workAges != null">
+            and(
+            (StartMonth &lt;= #{workAges} and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth is null)
+            or (StartMonth &lt;= #{workAges} and EndMonth is null)
+            )
+        </if>
+        <if test="grade != null">
+            and ConsumeIntegral &lt;= #{integral};
+        </if>
+    </select>
+
+    <select id="listByRealName">
+
+        SELECT p.Id,
+               p.NAME,
+               p.GradeIds,
+               p.Type,
+               p.StartMonth,
+               p.EndMonth,
+               p.StartTime,
+               p.EndTime,
+               p.STATUS,
+               p.SegmentationId,
+               p.LimitForCus,
+               p.LimitForOrder,
+               p.SalesRatio,
+               p.CommRatio,
+               p.RewardAmount,
+               p.SalesAmount,
+               p.UsePreStorage,
+               p.UseCash,
+               p.IsStepPrice,
+               p.CreateSource,
+               p.CreateTime,
+               p.UpdateSource,
+               p.UpdateTime,
+               p.IsDeleted
+        FROM newec.policy p
+                 left outer join (select Id,
+                                         PolicyId,
+                                         DepartmentId,
+                                         CreateSource,
+                                         CreateTime,
+                                         UpdateSource,
+                                         UpdateTime,
+                                         IsDeleted
+                                  from policy_dept) pd on pd.PolicyId = p.Id
+                 left outer join (select Id,
+                                         PolicyId,
+                                         UserId,
+                                         CreateSource,
+                                         CreateTime,
+                                         UpdateSource,
+                                         UpdateTime,
+                                         IsDeleted
+                                  from newec.policy_user) pu on pu.PolicyId = p.Id
+                 left outer join (select Id,
+                                         PolicyId,
+                                         GradeId,
+                                         SaleAmount,
+                                         RewardAmount,
+                                         CreateTime,
+                                         CreateSource,
+                                         UpdateSource,
+                                         UpdateTime,
+                                         IsDeleted
+                                  from policy_grade_money
+        ) pgm on pgm.PolicyId = p.Id
+                 left outer join (select Id,
+                                         PolicyId,
+                                         Number,
+                                         Amount,
+                                         RewardAmount,
+                                         CreateTime,
+                                         CreateSource,
+                                         UpdateSource,
+                                         UpdateTime,
+                                         IsDeleted
+                                  from policy_step_price
+        ) psp on psp.PolicyId = p.Id
+                 left outer join (select Id            as g_Id,
+                                         PolicyId,
+                                         Number        as g_Number,
+                                         GoodsId       as g_GoodsId,
+                                         SkuCode       as g_SkuCode,
+                                         Type          as g_Type,
+                                         IsMaster      as g_IsMaster,
+                                         IsFullGift    as g_IsFullGift,
+                                         IsUpgradeGift as g_IsUpgradeGift,
+                                         IsExtraGifts  as g_IsExtraGifts,
+                                         IsMandatory   as g_IsMandatory,
+                                         CreateTime    as g_CreateTime,
+                                         CreateSource  as g_CreateSource,
+                                         UpdateSource  as g_UpdateSource,
+                                         UpdateTime    as g_UpdateTime,
+                                         IsDeleted     as g_IsDeleted
+                                  from policy_goods_group
+        ) pgg on pgg.PolicyId = p.Id
+
+    </select>
+
+    <select id="listByRealName">
+        select Id,
+               PolicyId,
+               Number,
+               GoodsId,
+               SkuCode,
+               Type,
+               IsMaster,
+               IsFullGift,
+               IsUpgradeGift,
+               IsExtraGifts,
+               IsMandatory,
+               CreateTime,
+               CreateSource,
+               UpdateSource,
+               UpdateTime,
+               IsDeleted
+        from policy_goods_group
+    </select>
+
+    <select id="listByRealName">
+        select Id, Name, GradeIds, Type, StartMonth, EndMonth, StartTime, EndTime, Status, SegmentationId, LimitForCus,
+        LimitForOrder, SalesRatio, CommRatio, RewardAmount, SalesAmount, UsePreStorage, UseCash, IsStepPrice,
+        CreateSource, CreateTime, UpdateSource, UpdateTime, IsDeleted
+        from newec.policy
+        where Id in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listByRealName">
+        SELECT Id, Name, GradeIds, Type, StartMonth, EndMonth, StartTime, EndTime, Status,
+        SegmentationId, LimitForCus, LimitForOrder, SalesRatio, CommRatio, RewardAmount, SalesAmount, UsePreStorage,
+        UseCash, IsStepPrice,IsDeleted
+        FROM newec.policy a
+        WHERE IsDeleted = #{isDeleted}
+        AND Name = #{name}
+        AND Type = #{type}
+        AND StartTime = #{startTime}
+        AND EndTime = #{endTime}
+        <if test="gradeIds == null">
+            AND GradeIds is null
+        </if>
+        <if test="gradeIds != null">
+            AND GradeIds = #{gradeIds}
+        </if>
+        <if test="startMonth == null">
+            AND StartMonth is null
+        </if>
+        <if test="startMonth != null">
+            AND StartMonth = #{startMonth}
+        </if>
+        <if test="endMonth == null">
+            AND EndMonth is null
+        </if>
+        <if test="endMonth != null">
+            AND EndMonth = #{endMonth}
+        </if>
+        <if test="limitForCus == null">
+            AND LimitForCus is null
+        </if>
+        <if test="limitForCus != null">
+            AND LimitForCus = #{limitForCus}
+        </if>
+        <if test="limitForOrder == null">
+            AND LimitForOrder is null
+        </if>
+        <if test="limitForOrder != null">
+            AND LimitForOrder = #{limitForOrder}
+        </if>
+        <if test="salesRatio == null">
+            AND SalesRatio is null
+        </if>
+        <if test="salesRatio != null">
+            AND SalesRatio = #{salesRatio}
+        </if>
+        <if test="commRatio == null">
+            AND CommRatio is null
+        </if>
+        <if test="commRatio != null">
+            AND CommRatio = #{commRatio}
+        </if>
+        <if test="rewardAmount == null">
+            AND RewardAmount is null
+        </if>
+        <if test="rewardAmount != null">
+            AND RewardAmount = #{rewardAmount}
+        </if>
+        <if test="salesAmount == null">
+            AND SalesAmount is null
+        </if>
+        <if test="salesAmount != null">
+            AND SalesAmount = #{salesAmount}
+        </if>
+        <if test="usePreStorage == null">
+            AND UsePreStorage is null
+        </if>
+        <if test="usePreStorage != null">
+            AND UsePreStorage = #{usePreStorage}
+        </if>
+        <if test="useCash == null">
+            AND UseCash is null
+        </if>
+        <if test="useCash != null">
+            AND UseCash = #{useCash}
+        </if>
+        <if test="isStepPrice == null">
+            AND IsStepPrice is null
+        </if>
+        <if test="isStepPrice != null">
+            AND IsStepPrice = #{isStepPrice}
+        </if>
+        <if test="departmentIds != null and !departmentIds.isEmpty()">
+            AND EXISTS(SELECT Id FROM policy_dept b WHERE a.Id = b.PolicyId and b.DepartmentId in
+            <foreach collection="departmentIds" item="item" index="index" separator="," close=")" open="(">
+                #{item}
+            </foreach>)
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        SELECT
+        ifnull(sum(c.CashMoney+c.CashSpread+c.FullCashSpread),0) cashAmount,
+        ifnull(sum(c.ChargeAmount),0) chargeAmount,
+        ifnull(sum(c.UseBalance+c.BalanceSpread+c.FullCashSpread),0) useBalance,
+        ifnull(sum(c.BigOrderAward),0) bigOrderAward,
+        ifnull(sum(c.ProductAward),0) productAward
+        FROM
+        order_money c
+        WHERE
+        c.IsDeleted =0
+        <if test='listVO.statusList != null '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.status in
+            <foreach collection='listVO.statusList' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+        <if test='listVO.code != null '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.`Code`=#{listVO.code} )
+        </if>
+        <if test='listVO.currentGradeId != null '>
+            and EXISTS ( select b.Id from order_extend b where c.OrderId = b.OrderId and b.IsDeleted=0 and
+            b.BeforeCustomerGradeId = #{listVO.currentGradeId})
+        </if>
+        <if test='listVO.orderType != null '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.OrderType=#{listVO.orderType} )
+        </if>
+        <if test='listVO.orderSource != null and listVO.orderSource!=0 '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.OrderSource=#{listVO.orderSource} )
+        </if>
+        <if test='listVO.orderSource != null and listVO.orderSource==0 '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.OrderSource != 10 )
+        </if>
+        <if test='listVO.deliveryCode != null '>
+            and EXISTS( select d.Id from order_delivery_batch d where c.OrderId= d.OrderId and d.IsDeleted=0 and
+            d.LogisticsCode= #{listVO.deliveryCode} )
+        </if>
+        <if test='listVO.customerId != null '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.CustomerId = #{listVO.customerId} )
+        </if>
+        <if test='listVO.amountMin != null '>
+            and <![CDATA[ c.PayAmount >= #{listVO.amountMin} ]]>
+        </if>
+        <if test='listVO.amountMax != null '>
+            and <![CDATA[ c.PayAmount <= #{listVO.amountMax} ]]>
+        </if>
+        <if test='listVO.createTimeBegin != null '>
+            and
+            <![CDATA[EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.OrderTime >= #{listVO.createTimeBegin} )   ]]>
+        </if>
+        <if test='listVO.createTimeEnd != null '>
+            and
+            <![CDATA[EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.OrderTime <= #{listVO.createTimeEnd} )   ]]>
+        </if>
+        <if test='listVO.deliveryTimeBegin != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where c.OrderId= d.OrderId and d.IsDeleted=0 and d.DeliveryTime  >= #{listVO.deliveryTimeBegin} ) ]]>
+        </if>
+        <if test='listVO.deliveryTimeEnd != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where c.OrderId= d.OrderId and d.IsDeleted=0 and d.DeliveryTime <= #{listVO.deliveryTimeEnd} )  ]]>
+        </if>
+        <if test='listVO.reviewStartTime != null '>
+            and
+            <![CDATA[  EXISTS( select e.Id from order_review e where c.orderId=e.OrderId and e.IsDeleted=0 and e.ReviewTime >= #{listVO.reviewStartTime} )   ]]>
+        </if>
+        <if test='listVO.reviewEndTime != null '>
+            and
+            <![CDATA[  EXISTS( select e.Id from order_review e where c.orderId=e.OrderId and e.IsDeleted=0 and e.ReviewTime<= #{listVO.reviewEndTime} )  ]]>
+        </if>
+        <if test='listVO.reviewerId != null '>
+            and
+            <![CDATA[   EXISTS( select e.Id from order_review e where c.orderId=e.OrderId and e.IsDeleted=0 and e.ReviewerId=#{listVO.reviewerId}  )    ]]>
+        </if>
+        <if test='listVO.rejectStartTime != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where c.orderId= d.OrderId   and d.IsDeleted=0 and d.RejectTime  >= #{listVO.rejectStartTime} )]]>
+        </if>
+        <if test='listVO.rejectEndTime != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where c.orderId= d.OrderId   and d.IsDeleted=0 and d.RejectTime<= #{listVO.rejectEndTime} ) ]]>
+        </if>
+        <if test='listVO.userId != null '>
+            and
+            <![CDATA[ EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.UserId = #{listVO.userId} )   ]]>
+        </if>
+        <if test='listVO.isSelf == 1 '>
+            and
+            <![CDATA[ EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.UserId = #{listVO.queryUserId} )   ]]>
+        </if>
+        <if test='listVO.normalStatus != null '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.status in
+            <foreach collection='listVO.normalStatus' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+        <if test='listVO.isSelf == 0 and listVO.userOrgIds != null and listVO.isGlobal==0 '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.UserOrgId in
+            <foreach collection='listVO.userOrgIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+        <if test=' listVO.deptIds != null  '>
+            and EXISTS( select a.Id from orders a where c.OrderId =a.id and a.UserOrgId in
+            <foreach collection='listVO.deptIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+        <if test='listVO.isSelf == 0 and listVO.userOrgIds == null and listVO.isGlobal==0 '>
+            and
+            <![CDATA[ EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.UserId = #{listVO.queryUserId} )   ]]>
+        </if>
+        <if test='listVO.isFinished != null '>
+            and
+            <![CDATA[ EXISTS( select a.Id from orders a where c.OrderId =a.id  and a.isFinished = #{listVO.isFinished} )   ]]>
+        </if>
+        <if test='listVO.phone != null '>
+            and
+            <![CDATA[ EXISTS( select a.Id from orders a where c.OrderId =a.id  and find_in_set( #{listVO.phone},a.ReceiverTelephoneId) )   ]]>
+        </if>
+        <if test='listVO.goodsId != null '>
+            and (
+            <![CDATA[  EXISTS( select f.id from order_goods_detail f where c.OrderId=f.OrderId and f.IsDeleted=0  and f.GoodsId=#{listVO.goodsId} ) ]]>
+            )
+        </if>
+        <if test='listVO.customerAssetType != null '>
+            and (
+            <![CDATA[   EXISTS ( select b.Id from order_extend b where c.OrderId = b.OrderId and b.IsDeleted=0 and b.CustomerAssetsTypeId = #{listVO.customerAssetType})  ]]>
+            )
+        </if>
+
+    </select>
+
+
+    <select id="listByRealName">
+        SELECT ifnull(sum(c.CashMoney + c.CashSpread + c.FullCashSpread), 0)     cashAmount,
+               ifnull(sum(c.ChargeAmount), 0)
+                                                                                 chargeAmount,
+               ifnull(sum(c.UseBalance + c.BalanceSpread + c.FullCashSpread), 0) useBalance,
+               ifnull(sum(c.BigOrderAward), 0)                                   bigOrderAward,
+               ifnull(sum(c.ProductAward), 0)                                    productAward
+        FROM order_money c
+        WHERE c.IsDeleted = 0
+          and EXISTS(select a.Id from orders a where c.OrderId = a.id and a.status in (?))
+          and EXISTS(select a.Id from orders a where c.OrderId = a.id and a.`Code` = ?)
+          and EXISTS(select b.Id
+                     from order_extend b
+                     where c.OrderId = b.OrderId
+                       and b.IsDeleted = 0
+                       and b.BeforeCustomerGradeId = ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.OrderType = ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.OrderSource != 10)
+          and EXISTS(select d.Id
+                     from order_delivery_batch d
+                     where c.OrderId =
+                           d.OrderId
+                       and d.IsDeleted = 0
+                       and d.LogisticsCode = ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.CustomerId = ?)
+          and c.PayAmount >= ?
+          and c.PayAmount &lt;= ?
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.OrderTime >= ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.OrderTime &lt;= ?)
+          and EXISTS(select d.Id
+                     from order_delivery_batch d
+                     where c.OrderId = d.OrderId
+                       and d.IsDeleted = 0
+                       and d.DeliveryTime >= ?)
+          and EXISTS(select d.Id
+                     from order_delivery_batch d
+                     where c.OrderId =
+                           d.OrderId
+                       and d.IsDeleted = 0
+                       and d.DeliveryTime &lt;= ?)
+          and EXISTS(select e.Id
+                     from order_review e
+                     where c.orderId = e.OrderId
+                       and e.IsDeleted = 0
+                       and e.ReviewTime >= ?)
+          and EXISTS(select e.Id
+                     from order_review e
+                     where c.orderId = e.OrderId
+                       and e.IsDeleted = 0
+                       and e.ReviewTime &lt;= ?)
+          and EXISTS(select e.Id
+                     from order_review e
+                     where c.orderId = e.OrderId
+                       and e.IsDeleted = 0
+                       and e.ReviewerId = ?)
+          and EXISTS(select d.Id
+                     from order_delivery_batch d
+                     where c.orderId = d.OrderId
+                       and d.IsDeleted = 0
+                       and d.RejectTime >= ?)
+          and EXISTS(select d.Id
+                     from order_delivery_batch d
+                     where c.orderId = d.OrderId
+                       and d.IsDeleted = 0
+                       and d.RejectTime &lt;= ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.UserId = #{})
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.status in)
+          and EXISTS(select a.Id from orders a where c.OrderId = a.id and a.UserOrgId in
+            )
+          and EXISTS(select a.Id from orders a where c.OrderId = a.id and a.UserOrgId in)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId = a.id
+                       and a.isFinished = ?)
+          and EXISTS(select a.Id
+                     from orders a
+                     where c.OrderId
+                         = a.id
+                       and find_in_set(?, a.ReceiverTelephoneId))
+          and (EXISTS(select f.id
+                      from order_goods_detail f
+                      where c.OrderId = f.OrderId
+                        and f.IsDeleted = 0
+                        and f.GoodsId = ?))
+          and (EXISTS(select b.Id
+                      from order_extend b
+                      where c.OrderId = b.OrderId
+                        and b.IsDeleted = 0
+                        and b.CustomerAssetsTypeId = ?))
+    </select>
+
+
+    <select id="listByRealName">
+        SELECT
+        ifnull(sum(c.CashMoney),0) cashMoney,
+        ifnull(sum(c.CashSpread),0) cashSpread,
+        ifnull(sum(c.FullCashSpread),0) fullCashSpread,
+        ifnull(sum(c.ChargeAmount),0) chargeAmount,
+        ifnull(sum(c.UseBalance),0) useBalance,
+        ifnull(sum(c.FullCashSpread),0) fullCashSpread,
+        ifnull(sum(c.BalanceSpread),0) balanceSpread,
+        ifnull(sum(c.BigOrderAward),0) bigOrderAward,
+        ifnull(sum(c.ProductAward),0) productAward
+        FROM
+        orders a
+        <if test='listVO.deliveryCode != null '>
+            join order_delivery_batch d ON a.Id= d.OrderId and d.IsDeleted=0 and d.LogisticsCode =#{listVO.deliveryCode}
+        </if>
+        inner join order_money c on c.OrderId = a.Id
+        WHERE
+        a.IsDeleted =0
+        <if test='listVO.statusList != null '>
+            and <![CDATA[ a.status in ]]>
+            <foreach collection='listVO.statusList' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+        </if>
+        <if test='listVO.code != null '>
+            and a.Code =#{listVO.code}
+        </if>
+        <if test='listVO.currentGradeId != null '>
+            and EXISTS ( select b.Id from order_extend b where a.Id = b.OrderId and b.IsDeleted=0 and
+            b.BeforeCustomerGradeId = #{listVO.currentGradeId})
+        </if>
+        <if test='listVO.orderType != null '>
+            and a.OrderType =#{listVO.orderType}
+        </if>
+        <if test='listVO.orderSource != null and listVO.orderSource!=0 '>
+            and a.OrderSource =#{listVO.orderSource}
+        </if>
+        <if test='listVO.orderSource != null and listVO.orderSource==0 '>
+            and a.OrderSource != 10
+        </if>
+        <if test='listVO.customerId != null '>
+            and a.CustomerId = #{listVO.customerId}
+        </if>
+        <if test='listVO.amountMin != null '>
+            and <![CDATA[ a.PayAmount >= #{listVO.amountMin} ]]>
+        </if>
+        <if test='listVO.amountMax != null '>
+            and <![CDATA[ a.PayAmount <= #{listVO.amountMax} ]]>
+        </if>
+        <if test='listVO.createTimeBegin != null '>
+            and <![CDATA[ a.OrderTime >= #{listVO.createTimeBegin} ]]>
+        </if>
+        <if test='listVO.createTimeEnd != null '>
+            and <![CDATA[ a.OrderTime <= #{listVO.createTimeEnd} ]]>
+        </if>
+        <if test='listVO.deliveryTimeBegin != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where a.Id= d.OrderId   and d.IsDeleted=0 and d.DeliveryTime  >= #{listVO.deliveryTimeBegin}) ]]>
+        </if>
+        <if test='listVO.deliveryTimeEnd != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where a.Id= d.OrderId  and d.IsDeleted=0 and d.DeliveryTime <= #{listVO.deliveryTimeEnd})  ]]>
+        </if>
+        <if test='listVO.reviewStartTime != null '>
+            and
+            <![CDATA[  EXISTS( select e.Id from order_review e where a.Id=e.OrderId and e.IsDeleted=0 and e.ReviewTime >= #{listVO.reviewStartTime} )   ]]>
+        </if>
+        <if test='listVO.reviewEndTime != null '>
+            and
+            <![CDATA[  EXISTS( select e.Id from order_review e where a.Id=e.OrderId and e.IsDeleted=0 and e.ReviewTime <= #{listVO.reviewEndTime} )  ]]>
+        </if>
+        <if test='listVO.reviewerId != null '>
+            and
+            <![CDATA[   EXISTS( select e.Id from order_review e where a.Id=e.OrderId and e.IsDeleted=0 and e.ReviewerId=#{listVO.reviewerId}  )    ]]>
+        </if>
+        <if test='listVO.rejectStartTime != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where a.Id= d.OrderId  and d.IsDeleted=0 and d.RejectTime  >= #{listVO.rejectStartTime} )]]>
+        </if>
+        <if test='listVO.rejectEndTime != null '>
+            and
+            <![CDATA[ EXISTS( select d.Id from order_delivery_batch d where a.Id= d.OrderId   and d.IsDeleted=0 and d.RejectTime <= #{listVO.rejectEndTime} )]]>
+        </if>
+        <if test='listVO.userId != null '>
+            and <![CDATA[ a.UserId = #{listVO.userId} ]]>
+        </if>
+        <if test='listVO.isSelf == 1 '>
+            and <![CDATA[ a.UserId = #{listVO.queryUserId} ]]>
+        </if>
+        <if test='listVO.normalStatus != null '>
+            and <![CDATA[ a.status in ]]>
+            <foreach collection='listVO.normalStatus' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+        </if>
+        <if test='listVO.isSelf == 0 and listVO.userOrgIds != null and listVO.isGlobal==0 '>
+            and <![CDATA[ a.UserOrgId in ]]>
+            <foreach collection='listVO.userOrgIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+        </if>
+        <if test=' listVO.deptIds != null  '>
+            and <![CDATA[ a.UserOrgId in ]]>
+            <foreach collection='listVO.deptIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+        </if>
+        <if test='listVO.isSelf == 0 and listVO.userOrgIds == null and listVO.isGlobal==0 '>
+            and <![CDATA[ a.UserId = #{listVO.queryUserId} ]]>
+        </if>
+        <if test='listVO.isFinished != null '>
+            and <![CDATA[ a.isFinished = #{listVO.isFinished} ]]>
+        </if>
+        <if test='listVO.phone != null '>
+            and find_in_set( #{listVO.phone},a.ReceiverTelephoneId)
+        </if>
+        <if test='listVO.goodsId != null '>
+            and (
+            <![CDATA[  EXISTS( select f.id from order_goods_detail f where a.id=f.OrderId and f.IsDeleted=0  and f.GoodsId=#{listVO.goodsId} ) ]]>
+            )
+        </if>
+        <if test='listVO.customerAssetType != null '>
+            and (
+            <![CDATA[   EXISTS ( select b.Id from order_extend b where a.Id = b.OrderId and b.IsDeleted=0 and b.CustomerAssetsTypeId = #{listVO.customerAssetType})  ]]>
+            )
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        select Id, PolicyId, ConsumeValue, ConsumeType
+        from policy_consume_config
+        where IsDeleted = 0
+        and ConsumeType = #{consumeType}
+        and PolicyId in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>
