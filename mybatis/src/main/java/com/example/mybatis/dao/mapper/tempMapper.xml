@@ -800,4 +800,68 @@
         </foreach>
     </select>
 
+    <select id="listByRealName">
+        select PolicyId
+        from policy_dept
+        where IsDeleted = 0
+        and DepartmentId in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listByRealName">
+        select Id,GoodsId,GoodsType,Number,ConsumeIntegral,`Status`,StartTime,EndTime,IsDeleted
+        from policy_integral_exchange
+        where IsDeleted = 0
+        and `Status` = 0
+        and StartTime &lt;= #{nowDate}
+        and EndTime >= #{nowDate}
+        and Id in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+        <if test="workAges != null">
+            and(
+            (StartMonth &lt;= #{workAges} and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth is null)
+            or (StartMonth &lt;= #{workAges} and EndMonth is null)
+            )
+        </if>
+        <if test="integralEnd != null">
+            and ConsumeIntegral &lt;= #{integralEnd};
+        </if>
+        <if test="integralStart != null">
+            and ConsumeIntegral >= #{integralStart};
+        </if>
+    </select>
+
+
+    <select id="listByRealName">
+        SELECT COUNT(a.Id)
+        FROM policy_extra a
+        WHERE IsDeleted = 0
+        <if test="departmentIds != null and departmentIds.size() &gt; 0">
+            AND exists(
+                select id
+                from policy_extra_dept b
+                where a.Id = b.PolicyExtraId
+                and b.DepartmentId in
+                <foreach collection="departmentIds" item="item" index="index" separator="," close=")" open="(">
+                    #{item}
+                </foreach>
+            )
+        </if>
+        AND (ReceiptMethod = #{receiptMethod} or ReceiptMethod is null)
+        AND NOT (<![CDATA[ endTime < #{startTime} ]]>  OR  <![CDATA[ startTime > #{endTime} ]]> )
+        AND NOT (<![CDATA[ endMoney < #{startMoney} ]]> OR  <![CDATA[ startMoney > #{endMoney} ]]>)
+        <if test="startMonth != null and endMonth != null">
+            AND NOT (<![CDATA[ EndMonth < #{startMonth} ]]> OR  <![CDATA[ StartMonth > #{endMonth} ]]>)
+        </if>
+        <if test="id != null ">
+            AND <![CDATA[ Id <> #{id} ]]>
+        </if>
+    </select>
+
 </mapper>
