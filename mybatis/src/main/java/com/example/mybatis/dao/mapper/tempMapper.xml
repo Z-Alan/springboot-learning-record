@@ -224,7 +224,7 @@
                p.UpdateSource,
                p.UpdateTime,
                p.IsDeleted
-        FROM newec.policy p
+        FROM policy p
                  left outer join (select Id,
                                          PolicyId,
                                          DepartmentId,
@@ -844,16 +844,18 @@
         WHERE IsDeleted = 0
         <if test="departmentIds != null and departmentIds.size() &gt; 0">
             AND exists(
-                select id
-                from policy_extra_dept b
-                where a.Id = b.PolicyExtraId
-                and b.DepartmentId in
-                <foreach collection="departmentIds" item="item" index="index" separator="," close=")" open="(">
-                    #{item}
-                </foreach>
+            select id
+            from policy_extra_dept b
+            where a.Id = b.PolicyExtraId
+            and b.DepartmentId in
+            <foreach collection="departmentIds" item="item" index="index" separator="," close=")" open="(">
+                #{item}
+            </foreach>
             )
         </if>
-        AND (ReceiptMethod = #{receiptMethod} or ReceiptMethod is null)
+        <if test="ReceiptMethod != null ">
+            AND (ReceiptMethod = #{receiptMethod} or ReceiptMethod is null)
+        </if>
         AND NOT (<![CDATA[ endTime < #{startTime} ]]>  OR  <![CDATA[ startTime > #{endTime} ]]> )
         AND NOT (<![CDATA[ endMoney < #{startMoney} ]]> OR  <![CDATA[ startMoney > #{endMoney} ]]>)
         <if test="startMonth != null and endMonth != null">
@@ -864,4 +866,275 @@
         </if>
     </select>
 
+    <select id="listByRealName">
+        SELECT Id
+        FROM policy_full_gift
+        WHERE IsDeleted = 0
+        AND GoodsId = #{goodsId}
+        AND GoodsType = #{goodsType}
+        AND Grade = #{grade}
+        <if test="id != null ">
+            AND <![CDATA[ Id <> #{id} ]]>
+        </if>
+        AND NOT (<![CDATA[ endTime < #{startTime} ]]> OR  <![CDATA[ startTime > #{endTime} ]]>)
+    </select>
+
+
+    <select id="listByRealName">
+        select a.Id, a.GoodsId, a.GoodsType, a.Number, a.Grade, a.EnjoyDoubleIntegrals,
+        a.StartMonth, a.EndMonth, a.StartTime, a.EndTime,
+        a.Status
+        from policy_full_gift a
+        where a.IsDeleted = 0
+        <if test="id != null ">
+            AND <![CDATA[ Id <> #{id} ]]>
+        </if>
+        <if test="goodsId != null and goodsId!='' ">
+            and a.GoodsId = #{goodsId}
+        </if>
+        <if test="status != null ">
+            and a.Status = #{status}
+        </if>
+        <if test="goodsType != null ">
+            and a.GoodsType = #{goodsType}
+        </if>
+        <if test="grade != null and grade!='' ">
+            and a.Grade = #{grade}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            and <![CDATA[ a.startTime >= #{startTime} ]]>
+        </if>
+        <if test="endTime != null and endTime != '' ">
+            and <![CDATA[ a.endTime <= #{endTime} ]]>
+        </if>
+        <if test="startTimeDistinct != null and endTimeDistinct != null ">
+            and not (<![CDATA[ endTime <= #{startTimeDistinct} ]]> OR  <![CDATA[ startTime >= #{endTimeDistinct} ]]>)
+        </if>
+        <if test="departmentIds != null and departmentIds.size() &gt; 0 ">
+            and EXISTS(
+            select d.id
+            from policy_full_dept d
+            where d.IsDeleted = 0
+            and a.Id = d.PolicyFullId
+            and d.DepartmentId in
+            <foreach collection='departmentIds' item='id' index='index' open='(' close=')'
+                     separator=','>#{id}
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        select a.*
+        from policy_upgrade_gift a
+        where a.IsDeleted = 0
+        <if test="id != null ">
+            and <![CDATA[ Id <> #{id} ]]>
+        </if>
+        <if test="goodsId != null and goodsId!='' ">
+            and a.GoodsId = #{goodsId}
+        </if>
+        <if test="status != null ">
+            and a.Status = #{status}
+        </if>
+        <if test="goodsType != null ">
+            and a.GoodsType = #{goodsType}
+        </if>
+        <if test="goodsType != null ">
+            and a.GoodsType = #{goodsType}
+        </if>
+        <if test="upgradeTypeId != null ">
+            and a.UpgradeTypeId = #{upgradeTypeId}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            and <![CDATA[ a.startTime >= #{startTime} ]]>
+        </if>
+        <if test=" endTime != null and endTime != '' ">
+            and <![CDATA[ a.endTime <= #{endTime} ]]>
+        </if>
+        <if test="startTimeDistinct != null and endTimeDistinct != null ">
+            and not (<![CDATA[ a.endTime <= #{startTimeDistinct} ]]> OR  <![CDATA[ a.startTime >= #{endTimeDistinct} ]]>
+            )
+        </if>
+        <if test="departmentIds != null and departmentIds.size() &gt; 0 ">
+            and EXISTS(
+            select d.id
+            from policy_upgrade_dept d
+            where d.IsDeleted = 0
+            and a.Id = d.PolicyUpgradeId
+            and <![CDATA[ d.DepartmentId in ]]>
+            <foreach collection='departmentIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        SELECT COUNT(a.Id)
+        FROM policy_extra a
+        WHERE IsDeleted = 0
+        <if test="departmentIds != null and departmentIds.size() &gt; 0">
+            AND exists(
+            select id
+            from policy_extra_dept b
+            where a.Id = b.PolicyExtraId
+            and b.DepartmentId in
+            <foreach collection="departmentIds" item="item" index="index" separator="," close=")" open="(">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="receiptMethod != null ">
+            AND (ReceiptMethod = #{receiptMethod} or ReceiptMethod is null)
+        </if>
+        AND NOT (<![CDATA[ endTime < #{startTime} ]]>  OR  <![CDATA[ startTime > #{endTime} ]]> )
+        AND NOT (<![CDATA[ endMoney < #{startMoney} ]]> OR  <![CDATA[ startMoney > #{endMoney} ]]>)
+        <if test="startMonth != null and endMonth != null">
+            AND NOT (<![CDATA[ EndMonth < #{startMonth} ]]> OR  <![CDATA[ StartMonth > #{endMonth} ]]>)
+        </if>
+        <if test="inGroupStartMonth != null and inGroupEndMonth != null">
+            AND NOT (<![CDATA[ EndMonth < #{inGroupStartMonth} ]]> OR  <![CDATA[ StartMonth > #{inGroupEndMonth} ]]>)
+        </if>
+        <if test="id != null ">
+            AND <![CDATA[ Id <> #{id} ]]>
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        select a.*
+        from policy_free_collar a
+        where a.IsDeleted = 0
+        <if test="goodsId != null and goodsId!='' ">
+            and a.GoodsId = #{goodsId}
+        </if>
+        <if test="status != null ">
+            and a.Status = #{status}
+        </if>
+        <if test="goodsType != null ">
+            and a.GoodsType = #{goodsType}
+        </if>
+        <if test="customerLevel != null ">
+            and a.CustomerLevel = #{customerLevel}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            and <![CDATA[ a.startTime >= #{startTime} ]]>
+        </if>
+        <if test=" endTime != null and endTime != '' ">
+            and <![CDATA[ a.endTime <= #{endTime} ]]>
+        </if>
+        <if test="departmentIds != null and departmentIds.size() &gt; 0">
+            and EXISTS(
+            select d.id
+            from policy_free_dept d
+            where d.IsDeleted = 0
+            and a.Id = d.PolicyFreeId
+            and <![CDATA[ d.DepartmentId in ]]>
+            <foreach collection='departmentIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        SELECT a.*
+        from policy_integral_exchange a
+        where a.IsDeleted = 0
+        <if test="goodsId != null and goodsId!='' ">
+            and a.GoodsId = #{goodsId}
+        </if>
+        <if test="status != null ">
+            and a.Status = #{status}
+        </if>
+        <if test="goodsType != null ">
+            and a.GoodsType = #{goodsType}
+        </if>
+        <if test="consumeIntegral != null ">
+            and a.ConsumeIntegral = #{consumeIntegral}
+        </if>
+        <if test="startTime != null and startTime != '' ">
+            and <![CDATA[ a.startTime >= #{startTime} ]]>
+        </if>
+        <if test=" endTime != null and endTime != '' ">
+            and <![CDATA[ a.endTime <= #{endTime} ]]>
+        </if>
+        <if test="departmentIds != null and departmentIds.size() &gt; 0">
+            and EXISTS(
+            select d.id
+            from policy_integral_dept d
+            where d.IsDeleted = 0
+            and a.Id = d.PolicyIntegralId
+            and <![CDATA[ d.DepartmentId in ]]>
+            <foreach collection='departmentIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+            )
+        </if>
+    </select>
+
+    <select id="listByRealName">
+        select Id,GoodsId,GoodsType,Number,Grade,`Status`,StartTime,EndTime,EnjoyDoubleIntegrals,IsDeleted
+        from policy_full_gift
+        where IsDeleted = 0
+        and `Status` = 0
+        <if test="orderMoney != null">
+            and Grade &lt;= #{orderMoney}
+        </if>
+        and StartTime &lt;= #{nowDate}
+        and EndTime >= #{nowDate}
+        and Id in
+        <foreach collection="list" item="item" index="index" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+        <if test="workAges != null">
+            and(
+            (
+            (StartMonth &lt;= #{workAges} and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth >= #{workAges} )
+            or (StartMonth is null and EndMonth is null)
+            or (StartMonth &lt;= #{workAges} and EndMonth is null)
+            )
+            <if test="inGroupWorkAges != null">
+                or (
+                (InGroupStartMonth &lt;= #{inGroupWorkAges} and InGroupEndMonth >= #{inGroupWorkAges} )
+                or (InGroupStartMonth is null and InGroupEndMonth >= #{inGroupWorkAges} )
+                or (InGroupStartMonth is null and InGroupEndMonth is null)
+                or (InGroupStartMonth &lt;= #{inGroupWorkAges} and InGroupEndMonth is null)
+                )
+            </if>
+            )
+        </if>
+        <if test="grade != null">
+            and Grade = #{grade}
+        </if>
+        order by Grade desc
+    </select>
+
+    <select id="listByRealName">
+        select Id, Type, Grade, LevelId, ReturnMoney, EffectDays, DepartmentId
+        from policy_rebate
+        where IsDeleted = 0
+        <if test="type != null">
+            and Type = #{type}
+        </if>
+        <if test="grade != null">
+            and Grade = #{grade}
+        </if>
+        <if test="levelId != null">
+            and LevelId = #{levelId}
+        </if>
+        <if test="returnMoney != null">
+            and ReturnMoney = #{returnMoney}
+        </if>
+        <if test="effectDays != null">
+            and EffectDays = #{effectDays}
+        </if>
+        <if test="departmentIds != null and departmentIds.size() &gt; 0">
+            and DepartmentId in
+            <foreach collection='departmentIds' item='id' index='index' open='(' close=')' separator=','>
+                #{id}
+            </foreach>
+        </if>
+    </select>
 </mapper>
